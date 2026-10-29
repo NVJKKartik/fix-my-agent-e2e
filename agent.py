@@ -147,14 +147,14 @@ TOOLS = [
     _tool(
         "find_appointments",
         "List a patient's upcoming appointments.",
-        {"patient_name": "Full name", "phone": "Digits only"},
+        {"patient_name": "Full name", "phone": "The caller's phone number, as text (for example 555-0142)"},
     ),
     _tool(
         "book_appointment",
         "Book a new appointment. Date is YYYY-MM-DD, time is HH:MM (24h).",
         {
             "patient_name": "Full name",
-            "phone": "Digits only",
+            "phone": "The caller's phone number, as text (for example 555-0142)",
             "date": "YYYY-MM-DD",
             "time": "HH:MM",
             "reason": "Short reason for the visit",
@@ -165,7 +165,7 @@ TOOLS = [
         "Move an existing appointment to a new date and time.",
         {
             "appointment_id": "Id from find_appointments",
-            "phone": "Digits only",
+            "phone": "The caller's phone number, as text (for example 555-0142)",
             "new_date": "YYYY-MM-DD",
             "new_time": "HH:MM",
         },
@@ -173,7 +173,7 @@ TOOLS = [
     _tool(
         "cancel_appointment",
         "Cancel an existing appointment.",
-        {"appointment_id": "Id from find_appointments", "phone": "Digits only"},
+        {"appointment_id": "Id from find_appointments", "phone": "The caller's phone number, as text (for example 555-0142)"},
     ),
 ]
 HANDLERS = {
