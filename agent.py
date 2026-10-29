@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
+import uuid
 from datetime import date, datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -217,20 +218,31 @@ def _run_tool(call: dict) -> str:
         return json.dumps({"ok": False, "error": f"{type(exc).__name__}: {exc}"})
 
 
-def reply(history: list[dict]) -> str:
+def reply(history: list[dict]) -> tuple[str, list[dict]]:
+    """The assistant's answer, and the tools it ran to give it."""
     conversation = [{"role": "system", "content": system_prompt()}]
     conversation += [m for m in history if m.get("role") in ("user", "assistant")]
+    completed: list[dict] = []
     for _ in range(MAX_TOOL_ROUNDS):
         message = _llm(conversation)
         calls = message.get("tool_calls") or []
         if not calls:
-            return message.get("content") or ""
+            return message.get("content") or "", completed
         conversation.append(message)
         for call in calls:
-            conversation.append(
-                {"role": "tool", "tool_call_id": call["id"], "content": _run_tool(call)}
+            output = _run_tool(call)
+            conversation.append({"role": "tool", "tool_call_id": call["id"], "content": output})
+            result = json.loads(output)
+            completed.append(
+                {
+                    "id": uuid.uuid4().hex,
+                    "name": call["function"]["name"],
+                    "arguments": json.loads(call["function"]["arguments"] or "{}"),
+                    "result": result,
+                    "error": result.get("ok") is False,
+                }
             )
-    return "Sorry, I could not finish that request. Please call the clinic again."
+    return "Sorry, I could not finish that request. Please call the clinic again.", completed
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -258,7 +270,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             size = int(self.headers.get("content-length") or 0)
             body = json.loads(self.rfile.read(size) or b"{}")
-            content = reply(body.get("messages") or [])
+            content, completed = reply(body.get("messages") or [])
         except Exception as exc:
             self._send(500, {"error": {"type": type(exc).__name__, "message": str(exc)}})
             return
@@ -274,6 +286,8 @@ class Handler(BaseHTTPRequestHandler):
                         "finish_reason": "stop",
                     }
                 ],
+                # The tools this reply ran, in order: id, name, arguments, result, error.
+                "completed_tools": completed,
             },
         )
 

@@ -33,3 +33,5 @@ request) and `GET /health`.
 ## Seeded patients (for manual testing)
 
 Priya Sharma, phone 5550101, and Daniel Okoye, phone 5550102, each have one upcoming appointment.
+
+Each reply also lists the tools it ran in `completed_tools`: one object per call with `id`, `name`, `arguments`, `result` and `error`.
