@@ -10,9 +10,9 @@ Its behaviour is defined in `instructions.md`, which `agent.py` loads at startup
 ## Run
 
 ```
-export OPENAI_BASE_URL=https://api.openai.com/v1   # any OpenAI-compatible endpoint
-export OPENAI_API_KEY=...
-export OPENAI_MODEL=...                            # a model that supports tool calling
+export LLM_BASE_URL=https://api.openai.com/v1   # any OpenAI-compatible endpoint
+export LLM_API_KEY=...
+export LLM_MODEL=...                            # a model that supports tool calling
 python agent.py
 ```
 
@@ -25,9 +25,9 @@ request) and `GET /health`.
 
 | Name | Required | Purpose |
 | --- | --- | --- |
-| `OPENAI_BASE_URL` | yes | Base URL of the OpenAI-compatible API, ending in `/v1` |
-| `OPENAI_API_KEY` | yes | API key for that endpoint |
-| `OPENAI_MODEL` | yes | Model name |
+| `LLM_BASE_URL` | yes | Base URL of the OpenAI-compatible API, ending in `/v1` |
+| `LLM_API_KEY` | yes | API key for that endpoint |
+| `LLM_MODEL` | yes | Model name |
 | `PORT` | no | Listen port, default `8080` |
 
 ## Seeded patients (for manual testing)

@@ -194,15 +194,15 @@ def system_prompt() -> str:
 
 
 def _llm(messages: list[dict]) -> dict:
-    base_url = os.environ["OPENAI_BASE_URL"].rstrip("/")
+    base_url = os.environ["LLM_BASE_URL"].rstrip("/")
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
         data=json.dumps(
-            {"model": os.environ["OPENAI_MODEL"], "messages": messages, "tools": TOOLS}
+            {"model": os.environ["LLM_MODEL"], "messages": messages, "tools": TOOLS}
         ).encode("utf-8"),
         headers={
             "content-type": "application/json",
-            "authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
+            "authorization": f"Bearer {os.environ['LLM_API_KEY']}",
         },
     )
     with urllib.request.urlopen(request, timeout=90) as response:
@@ -266,7 +266,7 @@ class Handler(BaseHTTPRequestHandler):
             200,
             {
                 "object": "chat.completion",
-                "model": os.environ.get("OPENAI_MODEL", ""),
+                "model": os.environ.get("LLM_MODEL", ""),
                 "choices": [
                     {
                         "index": 0,
@@ -279,7 +279,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    for name in ("OPENAI_BASE_URL", "OPENAI_API_KEY", "OPENAI_MODEL"):
+    for name in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL"):
         if not os.environ.get(name):
             raise SystemExit(f"{name} is not set")
     system_prompt()  # fail at startup if instructions.md is missing
