@@ -1,6 +1,0 @@
-services:
-  agent:
-    build: .
-    command: ["python", "agent.py"]
-    environment:
-      PORT: "8080"
